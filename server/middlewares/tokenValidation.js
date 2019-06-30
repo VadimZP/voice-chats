@@ -1,11 +1,9 @@
 import jwt from 'jsonwebtoken';
-import config from './config';
+import config from '../config';
 
-const checkToken = (req, res, next) => {
-  let token = req.headers['x-access-token'] || req.headers.authorization; // Express headers are auto converted to lowercase
-  console.log(token);
+export default function tokenValidation(req, res, next) {
+  let token = req.headers['x-access-token'] || req.headers.authorization;
   if (token && token.startsWith('Bearer ')) {
-    // Remove Bearer from string
     token = token.slice(7, token.length);
   }
 
@@ -26,6 +24,4 @@ const checkToken = (req, res, next) => {
       message: 'Auth token is not supplied',
     });
   }
-};
-
-export default checkToken;
+}
