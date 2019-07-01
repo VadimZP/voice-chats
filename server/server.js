@@ -3,9 +3,8 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import mongoose from 'mongoose';
 
-import tokenValidation from './middlewares/tokenValidation';
+import auth from './middlewares/auth';
 import user from './routes/user';
-
 
 require('babel-core/register');
 require('babel-polyfill');
@@ -26,7 +25,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use('/', user);
 
-app.get('/', tokenValidation, index);
+app.get('/', auth, index);
 app.listen(port, () => console.log(`Server is listening on port: ${port}`));
 
 mongoose.connect('mongodb://localhost:27017/voice-chats', { useNewUrlParser: true, useCreateIndex: true });

@@ -5,11 +5,13 @@ import config from '../config';
 
 import User from '../models/user';
 import ApiError from '../utils/ErrorHandler';
+import auth from '../middlewares/auth';
 
 const router = express.Router();
 
-async function auth(req, res) {
-  const { username, password } = await User.find({ username: req.body.username });
+async function login(req, res) {
+  const { username, password } = await User.findOne({ username: req.body.username });
+
   if (req.body.username && req.body.password) {
     if (req.body.username === username && req.body.password === password) {
       const token = jwt.sign({ username }, config.secret, { expiresIn: '24h' });
@@ -68,7 +70,7 @@ async function signup(req, res) {
   }
 }
 
-router.post('/auth', auth);
+router.post('/login', login);
 router.post('/signup', signup);
 
-module.exports = router;
+export default router;

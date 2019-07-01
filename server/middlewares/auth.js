@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import config from '../config';
 
-export default function tokenValidation(req, res, next) {
+export default function auth(req, res, next) {
   let token = req.headers['x-access-token'] || req.headers.authorization;
   if (token && token.startsWith('Bearer ')) {
     token = token.slice(7, token.length);
