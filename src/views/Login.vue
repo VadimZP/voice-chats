@@ -2,9 +2,9 @@
     <div class="login-form">
         <h2>Login</h2>
         <form @submit.prevent="submit">
-            <div :class="{ 'hasError': $v.form.email.$error }">
-                <label for="email">Email</label>
-                <input type="email" name="email" v-model="form.email">
+            <div :class="{ 'hasError': $v.form.username.$error }">
+                <label for="username">Username</label>
+                <input type="username" name="username" v-model="form.username">
             </div>
             <div :class="{ 'hasError': $v.form.password.$error }">
                 <label for="password">Password</label>
@@ -18,16 +18,15 @@
 </template>
 
 <script>
-import {
-  required, minLength, between, email,
-} from 'vuelidate/lib/validators';
+import { required } from 'vuelidate/lib/validators';
+import router from '../router';
 
 export default {
   data() {
     return {
       form: {
         password: '',
-        email: '',
+        username: '',
       },
     };
   },
@@ -35,17 +34,18 @@ export default {
   validations: {
     form: {
       password: { required },
-      email: { required, email },
+      username: { required },
     },
   },
 
   methods: {
-    submit() {
+    async submit() {
       this.$v.form.$touch();
-      console.log(this.$v.form);
       if (this.$v.form.$error) return;
-      // to form submit after this
-      alert('Form submitted');
+      const result = await this.$store.dispatch('auth', { username: this.form.username, password: this.form.password });
+      if (result) {
+        router.push('home');
+      }
     },
   },
 };

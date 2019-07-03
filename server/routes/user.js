@@ -20,6 +20,8 @@ async function login(req, res) {
         success: true,
         message: 'Authentication successful!',
         token,
+        username,
+        password,
       });
     } else {
       res.sendStatus(403).json({

@@ -9,14 +9,20 @@ const userModule = {
   },
   mutations: {
     auth: (state, payload) => {
-      state.username = 'test';
+      const { username, email, token } = payload;
+
+      localStorage.setItem('token', token);
+
+      state.username = username;
+      state.email = email;
     },
   },
   actions: {
     async auth({ commit }, payload) {
       try {
-        const { data: { token } } = await axios.post('http://localhost:8000/auth', payload);
-        commit('auth', { token });
+        const { data } = await axios.post('http://localhost:8000/login', payload);
+        commit('auth', data);
+        return data;
       } catch (e) {
         throw Error(`Auth error: ${e}`);
       }
