@@ -14,6 +14,7 @@
                 Submit
             </button>
         </form>
+        <p v-if="loginError">{{loginError}}</p>
     </div>
 </template>
 
@@ -24,6 +25,7 @@ import router from '../router';
 export default {
   data() {
     return {
+      loginError: '',
       form: {
         password: '',
         username: '',
@@ -42,9 +44,16 @@ export default {
     async submit() {
       this.$v.form.$touch();
       if (this.$v.form.$error) return;
-      const result = await this.$store.dispatch('auth', { username: this.form.username, password: this.form.password });
-      if (result) {
-        router.push('home');
+      try {
+        const result = await this.$store.dispatch('login', { username: this.form.username, password: this.form.password });
+        if (result) {
+          router.push('home');
+        }
+      } catch (error) {
+        if(error.statusCode === 403) {
+          this.loginError = error.message
+        }
+        throw Error(error.message);
       }
     },
   },

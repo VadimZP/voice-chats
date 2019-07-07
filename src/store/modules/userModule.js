@@ -1,5 +1,13 @@
 import axios from 'axios';
 
+class ApiError extends Error {
+  constructor(message, statusCode) {
+    super();
+    this.message = message;
+    this.statusCode = statusCode;
+  }
+}
+
 const userModule = {
   state: {
     username: '',
@@ -8,7 +16,7 @@ const userModule = {
     username: state => state.username,
   },
   mutations: {
-    auth: (state, payload) => {
+    login: (state, payload) => {
       const { username, email, token } = payload;
 
       localStorage.setItem('token', token);
@@ -18,13 +26,13 @@ const userModule = {
     },
   },
   actions: {
-    async auth({ commit }, payload) {
+    async login({ commit }, payload) {
       try {
-        const { data } = await axios.post('http://localhost:8000/login', payload);
-        commit('auth', data);
+        const data = await axios.post('http://localhost:8000/login', payload);
+        commit('login', data);
         return data;
-      } catch (e) {
-        throw Error(`Auth error: ${e}`);
+      } catch (error) {
+        throw new ApiError('Incorrect username or password', error.response.status);
       }
     },
   },
