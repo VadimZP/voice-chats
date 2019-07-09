@@ -24,12 +24,27 @@ const userModule = {
       state.username = username;
       state.email = email;
     },
+    signup: (state, payload) => {
+      const { username, email } = payload;
+
+      state.username = username;
+      state.email = email;
+    },
   },
   actions: {
     async login({ commit }, payload) {
       try {
         const data = await axios.post('http://localhost:8000/login', payload);
         commit('login', data);
+        return data;
+      } catch (error) {
+        throw new ApiError('Incorrect username or password', error.response.status);
+      }
+    },
+    async signup({ commit }, payload) {
+      try {
+        const data = await axios.post('http://localhost:8000/signup', payload);
+        commit('signup', data);
         return data;
       } catch (error) {
         throw new ApiError('Incorrect username or password', error.response.status);
