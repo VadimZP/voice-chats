@@ -21,8 +21,6 @@ async function login(req, res) {
     if (username && password) {
       const token = jwt.sign({ username }, config.secret, { expiresIn: '24h' });
       res.json({
-        status: 200,
-        message: 'Authentication successful!',
         token,
         username,
       });
@@ -44,29 +42,25 @@ async function signup(req, res) {
     const data = await User.findOne({
       username,
     });
-
-    console.log('DATA:', data);
-
-    if (data) {
+    if (data !== null) {
       res.sendStatus(409).json({
-        message: 'This email is already registered',
+        message: 'This username is already registered',
       });
     }
 
     const errors = validationResult(req);
-
     if (!errors.isEmpty()) {
       res.sendStatus(422).json({ errors: errors.array() });
       return;
     }
 
-    const user = await User.save({
+    const user = new User({
       username,
       email,
       password,
     });
-
-    res.json(user);
+    const savedUser = await user.save();
+    res.status(201).send({ data: savedUser });
   } catch (err) {
     res.sendStatus(500).json({
       message: 'Something went wrong in signup',

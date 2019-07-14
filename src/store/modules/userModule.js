@@ -17,18 +17,17 @@ const userModule = {
   },
   mutations: {
     login: (state, payload) => {
-      const { username, email, token } = payload;
-
+      const { data: { username, token } } = payload;
+      console.log(username)
       localStorage.setItem('token', token);
 
       state.username = username;
-      state.email = email;
+      state.username = username;
     },
     signup: (state, payload) => {
-      const { username, email } = payload;
+      const { username } = payload;
 
       state.username = username;
-      state.email = email;
     },
   },
   actions: {
@@ -47,7 +46,7 @@ const userModule = {
         commit('signup', data);
         return data;
       } catch (error) {
-        throw new ApiError('Incorrect username or password', error.response.status);
+        throw new ApiError(error.response.message, error.response.status);
       }
     },
   },

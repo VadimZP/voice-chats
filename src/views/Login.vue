@@ -1,67 +1,116 @@
 <template>
-    <div class="login-form">
-        <h2>Login</h2>
-        <form @submit.prevent="submit">
-            <div :class="{ 'hasError': $v.form.username.$error }">
-                <label for="username">Username</label>
-                <input type="username" name="username" v-model="form.username">
-            </div>
-            <div :class="{ 'hasError': $v.form.password.$error }">
-                <label for="password">Password</label>
-                <input type="password" name="password" v-model="form.password">
-            </div>
-            <button type="submit" class="button">
-                Submit
-            </button>
-        </form>
-        <p v-if="loginError">{{loginError}}</p>
-    </div>
+  <div>
+    <form novalidate class="md-layout form-container" @submit.prevent="submit">
+
+      <md-card class="md-layout-item md-size-50 md-small-size-100">
+			<md-progress-bar md-mode="indeterminate" v-if="loading" />
+
+        <md-card-header>
+          <div class="md-title">Login</div>
+        </md-card-header>
+
+        <md-card-content>
+          <md-field :class="getValidationClass('username')">
+            <label for="first-name">Username</label>
+            <md-input
+              name="first-name"
+              id="first-name"
+              autocomplete="given-name"
+              v-model="form.username"
+            />
+            <span class="md-error" v-if="!$v.form.username.required">Username is required</span>
+            <span class="md-error" v-else-if="!$v.form.username.minlength">Invalid username</span>
+          </md-field>
+          <md-field :class="getValidationClass('password')">
+            <label for="password">Password</label>
+            <md-input
+              type="password"
+              name="password"
+              id="password"
+              autocomplete="password"
+              v-model="form.password"
+            />
+            <span class="md-error" v-if="!$v.form.password.required">The password is required</span>
+            <span class="md-error" v-else-if="!$v.form.password">Invalid password</span>
+          </md-field>
+        </md-card-content>
+
+				<span class="md-error" v-if="loginError">{{loginError}}</span>
+
+        <md-card-actions>
+          <md-button type="submit" class="md-primary" :disabled="loading">Login</md-button>
+        </md-card-actions>
+      </md-card>
+
+    </form>
+  </div>
 </template>
 
 <script>
-import { required } from 'vuelidate/lib/validators';
-import router from '../router';
+import { required } from "vuelidate/lib/validators";
+import router from "../router";
 
 export default {
   data() {
     return {
-      loginError: '',
+      loginError: "",
+      loading: false,
       form: {
-        password: '',
-        username: '',
-      },
+        password: "",
+        username: ""
+      }
     };
   },
 
   validations: {
     form: {
       password: { required },
-      username: { required },
-    },
+      username: { required }
+    }
   },
 
   methods: {
+    getValidationClass(fieldName) {
+      const field = this.$v.form[fieldName];
+
+      if (field) {
+        return {
+          "md-invalid": field.$invalid && field.$dirty
+        };
+      }
+    },
     async submit() {
       this.$v.form.$touch();
       if (this.$v.form.$error) return;
       try {
-        const result = await this.$store.dispatch('login', { username: this.form.username, password: this.form.password });
+        this.loading = true;
+
+        const result = await this.$store.dispatch("login", {
+          username: this.form.username,
+          password: this.form.password
+        });
         if (result) {
-          router.push('home');
+					console.log(result)
+          setTimeout(() => {
+            this.loading = false;
+            router.push("home");
+          }, 2000);
         }
       } catch (error) {
-        if(error.statusCode === 403) {
-          this.loginError = error.message
+        this.loading = false;
+
+        if (error.statusCode === 403) {
+          this.loginError = error.message;
         }
         throw Error(error.message);
       }
-    },
-  },
+    }
+  }
 };
 </script>
 
 <style lang="scss">
-.hasError {
-    color: red,
+.form-container {
+  justify-content: center;
 }
 </style>
