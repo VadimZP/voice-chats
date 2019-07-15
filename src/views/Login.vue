@@ -90,7 +90,6 @@ export default {
           password: this.form.password
         });
         if (result) {
-					console.log(result)
           setTimeout(() => {
             this.loading = false;
             router.push("home");

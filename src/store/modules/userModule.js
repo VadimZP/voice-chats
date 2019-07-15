@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+
 class ApiError extends Error {
   constructor(message, statusCode) {
     super();
@@ -18,10 +19,9 @@ const userModule = {
   mutations: {
     login: (state, payload) => {
       const { data: { username, token } } = payload;
-      console.log(username)
+
       localStorage.setItem('token', token);
 
-      state.username = username;
       state.username = username;
     },
     signup: (state, payload) => {
